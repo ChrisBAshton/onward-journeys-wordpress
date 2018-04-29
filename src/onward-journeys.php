@@ -7,7 +7,7 @@ class OnwardJourneys {
             $links_markdown = $container[1];
             $the_content = str_replace(
                 $container_code,
-                '<ul>' . $this->linksMarkdownToLi($links_markdown) . '</ul>',
+                '<ul class="onward-journeys">' . $this->linksMarkdownToLi($links_markdown) . '</ul>',
                 $the_content
             );
         }
