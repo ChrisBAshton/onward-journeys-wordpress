@@ -11,7 +11,8 @@
 require('src/onward-journeys.php');
 
 function create_onward_journeys($the_content) {
-    new OnwardJourneys($the_content);
+    $oj = new OnwardJourneys();
+    return $oj->process($the_content);
 }
 
 add_filter('the_content', 'create_onward_journeys', 1);

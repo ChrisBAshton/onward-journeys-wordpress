@@ -1,64 +1,40 @@
 <?php
 
 class OnwardJourneys {
-    function __construct($the_content = '') {
-        // $containers = array();
-        // $pattern = "/\[onward\-journeys\](.+)\[/onward\-journeys\]/gm";
-        // preg_match_all($pattern, $the_content, $links);
-        // var_dump($links);
+    function process($the_content) {
+        foreach($this->onwardJourneyContainers($the_content) as $container) {
+            $container_code = $container[0];
+            $links_markdown = $container[1];
+            $the_content = str_replace(
+                $container_code,
+                '<ul>' . $this->linksMarkdownToLi($links_markdown) . '</ul>',
+                $the_content
+            );
+        }
         return $the_content;
     }
-    //
-    // create_onward_journeys__backup($content) {
-    //     $rawSlideshow = getRawSlideshow($content);
-    //     if ($rawSlideshow) {
-    //         try {
-    //             $placeholder = "***PLACEHOLDER***"; // @todo make this rand() - any article with ***PLACEHOLDER*** as content will screw up
-    //             $articleWithoutSlideshow = replaceSlideshowWith($content, $placeholder);
-    //             $cookedSlideshow = cookSlideshow($rawSlideshow);
-    //             $content = str_replace($placeholder, $cookedSlideshow, $articleWithoutSlideshow);
-    //         } catch(Exception $e) {
-    //             $content = "<!-- SLIDESHOW COULDN'T PARSE BBCODE: ".$e->getMessage()." --> " . $content;
-    //         }
-    //     }
-    //     return $content;
-    // }
-    //
-    // getRawSlideshow($content) {
-    //     $slideshow = get_string_between($content, "[onward-journeys]", "[/onward-journeys]");
-    //     if(strlen($slideshow) > 0) {
-    //     	 return "[onward-journeys]" . $slideshow . "[/onward-journeys]";
-    //     }
-    //     return false;
-    // }
-    //
-    // replaceSlideshowWith($content, $placeholder) {
-    //     $slideshowStartsAt = strpos($content, "[onward-journeys]");
-    //     $slideshowEndsAt = strpos($content, "[/onward-journeys]") + strlen("[/onward-journeys]");
-    //     $beginningOfArticle = substr($content, 0, $slideshowStartsAt);
-    //     $endOfArticle = substr($content, $slideshowEndsAt, strlen($content));
-    //     return $beginningOfArticle . $placeholder . $endOfArticle;
-    // }
-    //
-    // cookSlideshow($slideshow) {
-    //     $links = array();
-    //     $pattern = "/\[(.+)\|(.+)\]/";
-    //     preg_match_all($pattern, $slideshow, $links);
-    //     // $slideshow = processLinks($links[0], $links[1], $slideshow);
-    //     return $slideshow;
-    // }
-    //
-    // processLinks($text, $url, $html) {
-    //     return $text + $url + $html;
-    // }
-    //
-    // // credit http://stackoverflow.com/a/9826656
-    // get_string_between($string, $start, $end){
-    //     $string = " ".$string;
-    //     $ini = strpos($string,$start);
-    //     if ($ini == 0) return "";
-    //     $ini += strlen($start);
-    //     $len = strpos($string,$end,$ini) - $ini;
-    //     return substr($string,$ini,$len);
-    // }
+
+    function onwardJourneyContainers($the_content) {
+        $pattern = "/\[onward\-journeys\]((?:\s|.)+?(?=\[\/onward\-journeys\]))\[\/onward\-journeys\]/";
+        $containers = array();
+        preg_match_all($pattern, $the_content, $containers, PREG_SET_ORDER);
+        return $containers;
+    }
+
+    function linksMarkdownToLi($links_markdown) {
+        $pattern = "/\[(.+)\|(.+)\]/";
+        $links = array();
+        preg_match_all($pattern, $links_markdown, $links, PREG_SET_ORDER);
+        foreach($links as $link) {
+            $link_markdown = $link[0];
+            $link_text = $link[1];
+            $link_url = $link[2];
+            $links_markdown = str_replace(
+                $link_markdown,
+                '<li><a href="' . $link_url . '">' . $link_text . '</a></li>',
+                $links_markdown
+            );
+        }
+        return $links_markdown;
+    }
 }
