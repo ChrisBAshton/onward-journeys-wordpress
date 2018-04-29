@@ -15,6 +15,8 @@ class OnwardJourneys {
     }
 
     function onwardJourneyContainers($the_content) {
+        // matches [onward-journeys] shortcode, allowing any characters and spaces in the middle
+        // until it reaches a closing [/onward-journeys] shortcode.
         $pattern = "/\[onward\-journeys\]((?:\s|.)+?(?=\[\/onward\-journeys\]))\[\/onward\-journeys\]/";
         $containers = array();
         preg_match_all($pattern, $the_content, $containers, PREG_SET_ORDER);
