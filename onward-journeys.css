@@ -1,0 +1,9 @@
+ul.onward-journeys li {
+    margin-bottom: 1em;
+}
+
+.onward-journeys a {
+    font-weight: bold;
+    text-decoration: none;
+    border-bottom: 1px solid rgb(235,235,235);
+}
