@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Onward Journeys
  * Description: Allows editors to define onward journeys within their articles.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: ChrisBAshton
  * Author URI: https://ashton.codes
  */
@@ -21,7 +21,7 @@ function apply_onward_journey_styling() {
 }
 
 add_filter('the_content', 'create_onward_journeys', 1);
-add_action('wp_enqueue_scripts', 'apply_onward_journey_styling');
+add_action('wp_enqueue_scripts', 'apply_onward_journey_styling', 99);
 
 // stop WordPress adding <br /> and <p> tags inside my shortcode (credit: http://sww.co.nz/solution-to-wordpress-adding-br-and-p-tags-around-shortcodes/)
 remove_filter('the_content', 'wpautop');
