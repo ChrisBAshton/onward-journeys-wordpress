@@ -1,6 +1,12 @@
 <?php
 
 class OnwardJourneys {
+    private $displayedLinks;
+
+    function __construct() {
+        $this->displayedLinks = [];
+    }
+
     function process($the_content) {
         foreach($this->onwardJourneyContainers($the_content) as $container) {
             $container_code = $container[0];
@@ -24,19 +30,61 @@ class OnwardJourneys {
     }
 
     function linksMarkdownToLi($links_markdown) {
-        $pattern = "/\[(.+)\|(.+)\]/";
-        $links = array();
-        preg_match_all($pattern, $links_markdown, $links, PREG_SET_ORDER);
-        foreach($links as $link) {
-            $link_markdown = $link[0];
-            $link_text = $link[1];
-            $link_url = $link[2];
-            $links_markdown = str_replace(
-                $link_markdown,
-                '<li><a href="' . $link_url . '">' . $link_text . '</a></li>',
-                $links_markdown
-            );
-        }
+        $rules = [
+            'recent-in-category' => [
+                'pattern' => '/\[recent-in-category]/',
+                'replace' => function () {
+                    $recentPosts = get_posts([
+                        'category' => get_the_category()[0]->term_id,
+                    ]);
+                    foreach($recentPosts as $thePost) :
+                        if (!$this->hasDisplayed('/' . $thePost->post_name)) {
+                            $recentPost = $thePost;
+                            break;
+                        }
+                    endforeach;
+                    return $this->linkAndTrack('/' . $recentPost->post_name, $recentPost->post_title);
+                }
+            ],
+            'manual-link' => [
+                'pattern' => '/\[(.+)\|(.+)\]/',
+                'replace' => function ($link_text, $link_url) {
+                    return $this->linkAndTrack($link_url, $link_text);
+                }
+            ],
+        ];
+        foreach($rules as $ruleName => $rule) :
+            $pattern = $rule['pattern'];
+            $replace = $rule['replace'];
+            $links = array();
+            preg_match_all($pattern, $links_markdown, $links, PREG_SET_ORDER);
+            foreach($links as $link) :
+                $link_markdown = $link[0];
+                $links_markdown = substr_replace(
+                    $links_markdown,
+                    $replace(@$link[1], @$link[2]),
+                    strpos($links_markdown, $link_markdown),
+                    strlen($link_markdown)
+                );
+            endforeach;
+        endforeach;
         return $links_markdown;
+    }
+
+    function hasDisplayed($wordPressSlug) {
+        foreach($this->displayedLinks as $displayedLink) {
+            if ($displayedLink->url === $wordPressSlug) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function linkAndTrack($link_url, $link_text) {
+        $this->displayedLinks[] = (object) [
+            'url' => $link_url,
+            'text' => $link_text,
+        ];
+        return '<li><a href="' . $link_url . '">' . $link_text . '</a></li>';
     }
 }

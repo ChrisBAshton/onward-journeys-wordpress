@@ -1,13 +1,10 @@
 <?php
 declare(strict_types=1);
-
+require_once(__DIR__ . '/../src/onward-journeys.php');
 use PHPUnit\Framework\TestCase;
 
-final class OnwardJourneysTest extends TestCase {
-    /**
-     * @before
-     */
-    function setUpPrivateVariables() {
+final class OnwardJourneysManualLinksTest extends TestCase {
+    function setUp() {
         $this->ojInstance = new OnwardJourneys();
     }
 
