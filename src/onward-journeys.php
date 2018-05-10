@@ -34,14 +34,16 @@ class OnwardJourneys {
             'recent-in-category' => [
                 'pattern' => '/\[recent-in-category]/',
                 'replace' => function () {
-                    $recentPosts = get_posts();
+                    $recentPosts = get_posts([
+                        'category' => get_the_category()[0]->term_id,
+                    ]);
                     foreach($recentPosts as $thePost) :
-                        if (!$this->hasDisplayed($thePost->post_name)) {
+                        if (!$this->hasDisplayed('/' . $thePost->post_name)) {
                             $recentPost = $thePost;
                             break;
                         }
                     endforeach;
-                    return $this->linkAndTrack($recentPost->post_name, $recentPost->post_title);
+                    return $this->linkAndTrack('/' . $recentPost->post_name, $recentPost->post_title);
                 }
             ],
             'manual-link' => [
