@@ -24,19 +24,34 @@ class OnwardJourneys {
     }
 
     function linksMarkdownToLi($links_markdown) {
-        $pattern = "/\[(.+)\|(.+)\]/";
-        $links = array();
-        preg_match_all($pattern, $links_markdown, $links, PREG_SET_ORDER);
-        foreach($links as $link) {
-            $link_markdown = $link[0];
-            $link_text = $link[1];
-            $link_url = $link[2];
-            $links_markdown = str_replace(
-                $link_markdown,
-                '<li><a href="' . $link_url . '">' . $link_text . '</a></li>',
-                $links_markdown
-            );
-        }
+        $rules = [
+            'manual-link' => [
+                'pattern' => '/\[(.+)\|(.+)\]/',
+                'replace' => function ($link_text, $link_url) {
+                    return '<li><a href="' . $link_url . '">' . $link_text . '</a></li>';
+                }
+            ],
+            'recent-in-category' => [
+                'pattern' => '/\[recent-in-category]/',
+                'replace' => function ($link_text, $link_url) {
+                    return '<li><a href="/portfolio">My Portfolio</a></li>';
+                }
+            ]
+        ];
+        foreach($rules as $ruleName => $rule) :
+            $pattern = $rule['pattern'];
+            $replace = $rule['replace'];
+            $links = array();
+            preg_match_all($pattern, $links_markdown, $links, PREG_SET_ORDER);
+            foreach($links as $link) :
+                $link_markdown = $link[0];
+                $links_markdown = str_replace(
+                    $link_markdown,
+                    $replace(@$link[1], @$link[2]),
+                    $links_markdown
+                );
+            endforeach;
+        endforeach;
         return $links_markdown;
     }
 }
