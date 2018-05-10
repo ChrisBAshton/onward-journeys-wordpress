@@ -1,6 +1,12 @@
 <?php
 
 class OnwardJourneys {
+    private $displayedLinks;
+
+    function __construct() {
+        $this->displayedLinks = [];
+    }
+
     function process($the_content) {
         foreach($this->onwardJourneyContainers($the_content) as $container) {
             $container_code = $container[0];
@@ -28,13 +34,28 @@ class OnwardJourneys {
             'manual-link' => [
                 'pattern' => '/\[(.+)\|(.+)\]/',
                 'replace' => function ($link_text, $link_url) {
+                    $this->displayedLinks[] = (object) [
+                        'url' => $link_url,
+                        'text' => $link_text,
+                    ];
                     return '<li><a href="' . $link_url . '">' . $link_text . '</a></li>';
                 }
             ],
             'recent-in-category' => [
                 'pattern' => '/\[recent-in-category]/',
-                'replace' => function ($link_text, $link_url) {
-                    return '<li><a href="/portfolio">My Portfolio</a></li>';
+                'replace' => function () {
+                    $recentPosts = get_posts();
+                    foreach($recentPosts as $thePost) :
+                        if (!$this->hasDisplayed($thePost->slug)) {
+                            $this->displayedLinks[] = (object) [
+                                'url' => $thePost->slug,
+                                'text' => $thePost->title,
+                            ];
+                            $recentPost = $thePost;
+                            break;
+                        }
+                    endforeach;
+                    return '<li><a href="/' . $recentPost->slug . '">' . $recentPost->title . '</a></li>';
                 }
             ]
         ];
@@ -45,13 +66,23 @@ class OnwardJourneys {
             preg_match_all($pattern, $links_markdown, $links, PREG_SET_ORDER);
             foreach($links as $link) :
                 $link_markdown = $link[0];
-                $links_markdown = str_replace(
-                    $link_markdown,
+                $links_markdown = substr_replace(
+                    $links_markdown,
                     $replace(@$link[1], @$link[2]),
-                    $links_markdown
+                    strpos($links_markdown, $link_markdown),
+                    strlen($link_markdown)
                 );
             endforeach;
         endforeach;
         return $links_markdown;
+    }
+
+    function hasDisplayed($wordPressSlug) {
+        foreach($this->displayedLinks as $displayedLink) {
+            if ($displayedLink->url === $wordPressSlug) {
+                return true;
+            }
+        }
+        return false;
     }
 }
