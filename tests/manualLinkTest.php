@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
-
+require_once(__DIR__ . '/../src/onward-journeys.php');
 use PHPUnit\Framework\TestCase;
 
-final class OnwardJourneysTest extends TestCase {
+final class OnwardJourneysManualLinksTest extends TestCase {
     /**
      * @before
      */
