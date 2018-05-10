@@ -3,12 +3,12 @@
 function get_posts() {
     return [
         (object) [
-            'slug' => '/portfolio',
-            'title' => 'My Portfolio',
+            'post_name' => '/portfolio',
+            'post_title' => 'My Portfolio',
         ],
         (object) [
-            'slug' => '/diff',
-            'title' => 'Something different',
+            'post_name' => '/diff',
+            'post_title' => 'Something different',
         ]
     ];
 }

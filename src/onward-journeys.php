@@ -42,12 +42,12 @@ class OnwardJourneys {
                 'replace' => function () {
                     $recentPosts = get_posts();
                     foreach($recentPosts as $thePost) :
-                        if (!$this->hasDisplayed($thePost->slug)) {
+                        if (!$this->hasDisplayed($thePost->post_name)) {
                             $recentPost = $thePost;
                             break;
                         }
                     endforeach;
-                    return $this->linkAndTrack($recentPost->slug, $recentPost->title);
+                    return $this->linkAndTrack($recentPost->post_name, $recentPost->post_title);
                 }
             ]
         ];
