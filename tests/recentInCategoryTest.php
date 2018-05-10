@@ -13,16 +13,31 @@ final class OnwardJourneysRecentInCategoryTest extends TestCase {
     }
 
     public function testMostRecentCall(): void {
-        $this->assertEquals(
-            '<ul class="onward-journeys"><li><a href="/portfolio">My Portfolio</a></li></ul>',
-            $this->ojInstance->process('[onward-journeys][recent-in-category][/onward-journeys]')
+        $this->assertEquals('
+                <ul class="onward-journeys">
+                    <li><a href="/portfolio">My Portfolio</a></li>
+                </ul>
+            ',
+            $this->ojInstance->process('
+                [onward-journeys]
+                    [recent-in-category]
+                [/onward-journeys]
+            ')
         );
     }
 
     public function testMultipleRecentCalls(): void {
-        $this->assertEquals(
-            '<ul class="onward-journeys"><li><a href="/portfolio">My Portfolio</a></li><li><a href="/diff">Something different</a></li></ul>',
-            $this->ojInstance->process('[onward-journeys][recent-in-category][recent-in-category][/onward-journeys]')
-        );
+        $this->assertEquals('
+                <ul class="onward-journeys">
+                    <li><a href="/portfolio">My Portfolio</a></li>
+                    <li><a href="/diff">Something different</a></li>
+                </ul>
+            ',
+            $this->ojInstance->process('
+                [onward-journeys]
+                    [recent-in-category]
+                    [recent-in-category]
+                [/onward-journeys]
+            '));
     }
 }

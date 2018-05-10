@@ -34,11 +34,7 @@ class OnwardJourneys {
             'manual-link' => [
                 'pattern' => '/\[(.+)\|(.+)\]/',
                 'replace' => function ($link_text, $link_url) {
-                    $this->displayedLinks[] = (object) [
-                        'url' => $link_url,
-                        'text' => $link_text,
-                    ];
-                    return '<li><a href="' . $link_url . '">' . $link_text . '</a></li>';
+                    return $this->linkAndTrack($link_url, $link_text);
                 }
             ],
             'recent-in-category' => [
@@ -47,15 +43,11 @@ class OnwardJourneys {
                     $recentPosts = get_posts();
                     foreach($recentPosts as $thePost) :
                         if (!$this->hasDisplayed($thePost->slug)) {
-                            $this->displayedLinks[] = (object) [
-                                'url' => $thePost->slug,
-                                'text' => $thePost->title,
-                            ];
                             $recentPost = $thePost;
                             break;
                         }
                     endforeach;
-                    return '<li><a href="/' . $recentPost->slug . '">' . $recentPost->title . '</a></li>';
+                    return $this->linkAndTrack($recentPost->slug, $recentPost->title);
                 }
             ]
         ];
@@ -84,5 +76,13 @@ class OnwardJourneys {
             }
         }
         return false;
+    }
+
+    function linkAndTrack($link_url, $link_text) {
+        $this->displayedLinks[] = (object) [
+            'url' => $link_url,
+            'text' => $link_text,
+        ];
+        return '<li><a href="' . $link_url . '">' . $link_text . '</a></li>';
     }
 }
