@@ -31,12 +31,6 @@ class OnwardJourneys {
 
     function linksMarkdownToLi($links_markdown) {
         $rules = [
-            'manual-link' => [
-                'pattern' => '/\[(.+)\|(.+)\]/',
-                'replace' => function ($link_text, $link_url) {
-                    return $this->linkAndTrack($link_url, $link_text);
-                }
-            ],
             'recent-in-category' => [
                 'pattern' => '/\[recent-in-category]/',
                 'replace' => function () {
@@ -49,7 +43,13 @@ class OnwardJourneys {
                     endforeach;
                     return $this->linkAndTrack($recentPost->post_name, $recentPost->post_title);
                 }
-            ]
+            ],
+            'manual-link' => [
+                'pattern' => '/\[(.+)\|(.+)\]/',
+                'replace' => function ($link_text, $link_url) {
+                    return $this->linkAndTrack($link_url, $link_text);
+                }
+            ],
         ];
         foreach($rules as $ruleName => $rule) :
             $pattern = $rule['pattern'];

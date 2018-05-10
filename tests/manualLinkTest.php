@@ -4,10 +4,7 @@ require_once(__DIR__ . '/../src/onward-journeys.php');
 use PHPUnit\Framework\TestCase;
 
 final class OnwardJourneysManualLinksTest extends TestCase {
-    /**
-     * @before
-     */
-    function setUpPrivateVariables() {
+    function setUp() {
         $this->ojInstance = new OnwardJourneys();
     }
 
